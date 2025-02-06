@@ -3,6 +3,9 @@
 # delete docker services data
 sudo rm -rf .docker/services/
 
+# delete bundles assets
+rm -rf public/bundles/
+
 # delete symfony cache folder
 sudo rm -rf var/
 

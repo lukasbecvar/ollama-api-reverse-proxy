@@ -27,22 +27,6 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --no-suggest
 
-      # create test database
-      - name: Create database
-        run: php bin/console doctrine:database:create --if-not-exists --env=test
-
-      # migrate database to latest version
-      - name: Migrate database
-        run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
-        
-      # load testing datafixtures
-      - name: Load db datafixtures
-        run: php bin/console doctrine:fixtures:load --no-interaction --env=test
-
-      # generate jwk key
-      - name: Generate JWT keys
-        run: php bin/console lexik:jwt:generate-keypair
-
       # phpunit process
       - name: Run PHPUnit
         run: php ./bin/phpunit
