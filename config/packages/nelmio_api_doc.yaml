@@ -1,0 +1,29 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: 'Ollama API reverse proxy'
+            description: 'REST-API documentation'
+            version: '%env(APP_VERSION)%'
+
+        # api servers
+        servers:
+            # testing dev env
+            - url: 'http://localhost'
+              description: 'Local development environment'
+            # live production system server url
+            - url: 'https://ollama-api.becvar.xyz'
+              description: 'Production server'
+
+        # security components
+        components:
+            securitySchemes:
+                XApiToken:
+                    type: apiKey
+                    in: header
+                    name: X-API-TOKEN
+                    description: 'API Access Token'
+                    required: true
+
+        # include security components
+        security:
+            - XApiToken: [] # API Access Token (validate request)

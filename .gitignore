@@ -1,0 +1,18 @@
+# env config files
+.env.prod
+
+# docker services data
+.docker/services
+
+# bundles assets
+/public/bundles
+
+# composer packages
+composer.lock
+vendor/
+
+# symfony temp storage
+var/
+
+# php code sniffer cache
+.phpcs-cache

@@ -1,0 +1,48 @@
+# run application tests with phpunit
+name: PHPUnit Tests
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  phpunit:
+    name: Run PHPUnit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # setup php interpreter
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: intl
+
+      # composer install
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --no-suggest
+
+      # create test database
+      - name: Create database
+        run: php bin/console doctrine:database:create --if-not-exists --env=test
+
+      # migrate database to latest version
+      - name: Migrate database
+        run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
+        
+      # load testing datafixtures
+      - name: Load db datafixtures
+        run: php bin/console doctrine:fixtures:load --no-interaction --env=test
+
+      # generate jwk key
+      - name: Generate JWT keys
+        run: php bin/console lexik:jwt:generate-keypair
+
+      # phpunit process
+      - name: Run PHPUnit
+        run: php ./bin/phpunit

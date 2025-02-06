@@ -1,0 +1,28 @@
+# docker compose configuration defines local development stack
+
+services:
+    # composer service for managing php dependencies
+    composer:
+        image: composer:latest
+        container_name: ollama_api_reverse_proxy_composer
+        working_dir: /app
+        mem_limit: 1g
+        volumes:
+            - .:/app
+        command: composer install
+
+    # web server container
+    php:
+        build:
+            context: .
+            dockerfile: ./.docker/Dockerfile
+        container_name: ollama_api_reverse_proxy_website
+        restart: always
+        volumes:
+            - ./.docker/config/apache.conf:/etc/apache2/sites-available/000-default.conf
+            - ./.docker/config/php.ini:/usr/local/etc/php/php.ini
+            - ./.docker/services/log:/var/log
+            - ./:/var/www
+        mem_limit: 1g
+        ports:
+            - "80:80"
