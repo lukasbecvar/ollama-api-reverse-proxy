@@ -2,6 +2,7 @@
 A reverse proxy API that serves as a layer for the Ollama API, allowing to securely call Ollama from external applications while ensuring that requests are validated with API token.
 
 ## Dependencies & requirements
+Based on [api-base](https://github.com/lukasbecvar/api-base)
 * PHP 8.4
     * [Website](https://php.net)
 * Symfony framework
