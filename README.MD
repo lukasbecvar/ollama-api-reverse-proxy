@@ -1,6 +1,28 @@
 # Ollama API Reverse Proxy
 A reverse proxy API that serves as a layer for the Ollama API, allowing to securely call Ollama from external applications while ensuring that requests are validated with API token.
 
+## Authentication
+The Ollama API Reverse Proxy uses an API token to authenticate requests. The API token is passed in the `X-API-TOKEN` header.
+
+## Request examples
+##### execute prompt
+```
+curl -X POST http://localhost/api/ollama/prompt \
+    -H "Content-Type: application/json" \
+    -H "X-API-TOKEN: 1234" \
+    -d '{
+        "model": "deepseek-r1:8b",
+        "prompt": "Hi, how are you?",
+        "stream": false
+    }'
+```
+##### get list of available models
+```
+curl -X GET http://localhost/api/ollama/models \
+    -H "Content-Type: application/json" \
+    -H "X-API-TOKEN: 1234"
+```
+
 ## Dependencies & requirements
 Based on [api-base](https://github.com/lukasbecvar/api-base)
 * PHP 8.4

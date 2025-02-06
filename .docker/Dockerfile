@@ -18,5 +18,5 @@ RUN docker-php-ext-install opcache
 # set global server name (domain)
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# enable rewrite module
+# enable apache modules
 RUN a2enmod rewrite
