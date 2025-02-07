@@ -6,6 +6,7 @@ use Exception;
 use App\Util\AppUtil;
 use OpenApi\Attributes\Tag;
 use App\Manager\ErrorManager;
+use OpenApi\Attributes\Items;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Response;
 use OpenApi\Attributes\JsonContent;
@@ -130,6 +131,81 @@ class OllamaApiController extends AbstractController
 
         // send request to ollama api
         $response = $this->httpClient->request('POST', $this->appUtil->getEnvValue('OLLAMA_API_URL') . '/api/generate', [
+            'json' => $content,
+        ]);
+
+        // get response status code
+        $statusCode = $response->getStatusCode();
+        $data = $response->toArray(false);
+
+        // return response
+        return new JsonResponse(json_encode($data, JSON_UNESCAPED_SLASHES), $statusCode, json: true);
+    }
+
+    /**
+     * Execute chat with Ollama API
+     *
+     * @param Request $request Request object
+     *
+     * @return JsonResponse Response from Ollama API
+     */
+    #[Response(
+        response: JsonResponse::HTTP_OK,
+        description: 'Successfully proxied the chat request to Ollama API',
+        content: new JsonContent(
+            type: 'object',
+            properties: [
+                new Property(property: 'message', type: 'object', description: 'The chat response from Ollama API')
+            ]
+        )
+    )]
+    #[Response(
+        response: JsonResponse::HTTP_BAD_REQUEST,
+        description: 'Bad Request - Missing required parameters',
+        content: new JsonContent(
+            type: 'object',
+            properties: [
+                new Property(property: 'status', type: 'string', example: 'error'),
+                new Property(property: 'message', type: 'string', example: 'Missing required parameters')
+            ]
+        )
+    )]
+    #[RequestBody(
+        content: new JsonContent(
+            type: 'object',
+            properties: [
+                new Property(property: 'model', type: 'string', example: 'deepseek-r1:8b'),
+                new Property(
+                    property: 'messages',
+                    type: 'array',
+                    items: new Items(
+                        properties: [
+                            new Property(property: 'role', type: 'string', example: 'user'),
+                            new Property(property: 'content', type: 'string', example: 'Hello, how are you?')
+                        ]
+                    ),
+                ),
+                new Property(property: 'stream', type: 'boolean', example: false)
+            ]
+        )
+    )]
+    #[Tag('ollama-api')]
+    #[Route('/api/ollama/chat', name: 'ollama_chat', methods: ['POST'])]
+    public function executeChat(Request $request): JsonResponse
+    {
+        // get data from request
+        $content = json_decode($request->getContent(), true);
+
+        // check if required parameters are set
+        if (!isset($content['model']) || !isset($content['messages'])) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Missing required parameters'
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        // send request to ollama chat API
+        $response = $this->httpClient->request('POST', $this->appUtil->getEnvValue('OLLAMA_API_URL') . '/api/chat', [
             'json' => $content,
         ]);
 

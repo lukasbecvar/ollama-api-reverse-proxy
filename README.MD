@@ -5,7 +5,7 @@ A reverse proxy API that serves as a layer for the Ollama API, allowing to secur
 The Ollama API Reverse Proxy uses an API token to authenticate requests. The API token is passed in the `X-API-TOKEN` header.
 
 ## Request examples
-##### execute prompt
+##### execute prompt (ollama generate)
 ```
 curl -X POST http://localhost/api/ollama/prompt \
     -H "Content-Type: application/json" \
@@ -15,6 +15,23 @@ curl -X POST http://localhost/api/ollama/prompt \
         "prompt": "Hi, how are you?",
         "stream": false
     }'
+```
+##### execute chat prompt with context history
+```
+curl -X 'POST' 'http://localhost/api/ollama/chat' \
+    -H 'accept: application/json' \
+    -H 'X-API-TOKEN: 1234' \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "model": "deepseek-r1:1.5b",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "What is the capital of France?"},
+            {"role": "assistant", "content": "The capital of France is Paris."},
+            {"role": "user", "content": "And what about Germany?"}
+        ],
+    "stream": false
+}'
 ```
 ##### get list of available models
 ```
